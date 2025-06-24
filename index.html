@@ -2,19 +2,14 @@
 <html>
 <head>
     <title>Sign In - Your Company</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- CORS and Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://*.b2clogin.com https://*.microsoftonline.com;">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
     
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -33,44 +28,25 @@
         }
         
         .logo {
-            margin-bottom: 30px;
-        }
-        
-        .logo img {
-            max-height: 60px;
-            /* Add fallback in case image fails to load */
-            background: transparent;
-            border: none;
-        }
-        
-        .logo-fallback {
-            display: none;
             font-size: 24px;
             font-weight: bold;
             color: #667eea;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
-        .intro h2 {
+        h2 {
             color: #333;
             font-size: 24px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             font-weight: 300;
         }
         
-        /* B2C API container styling */
-        #api {
-            background: transparent;
-            border: none;
-            padding: 0;
-        }
-        
-        .entry-item {
+        .form-group {
             margin-bottom: 20px;
             text-align: left;
         }
         
-        .entry-item label {
+        label {
             display: block;
             margin-bottom: 8px;
             color: #333;
@@ -78,32 +54,23 @@
             font-size: 14px;
         }
         
-        .entry-item input[type="email"],
-        .entry-item input[type="password"],
-        .entry-item input[type="text"] {
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
             width: 100%;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
             box-sizing: border-box;
-            transition: all 0.3s ease;
         }
         
-        .entry-item input:focus {
+        input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
         }
         
-        .buttons {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .buttons button,
-        #next,
-        #continue {
+        .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -112,43 +79,32 @@
             font-size: 16px;
             cursor: pointer;
             width: 100%;
-            margin-top: 10px;
-            transition: all 0.3s ease;
+            margin-top: 20px;
         }
         
-        .buttons button:hover,
-        #next:hover,
-        #continue:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .btn:hover {
+            opacity: 0.9;
         }
         
-        .divider {
-            margin: 20px 0;
-            text-align: center;
-            position: relative;
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 15px;
+            display: inline-block;
         }
         
-        .divider:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #ddd;
+        .forgot-password:hover {
+            text-decoration: underline;
         }
         
-        .divider span {
-            background: white;
-            padding: 0 15px;
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
             color: #666;
-            position: relative;
         }
         
-        /* Error handling */
-        .error,
-        .error.pageLevel {
+        .error {
             background-color: #f8d7da;
             color: #721c24;
             padding: 12px 16px;
@@ -159,161 +115,25 @@
             text-align: left;
         }
         
-        .error.itemLevel {
-            color: #dc3545;
-            font-size: 12px;
-            margin-top: 5px;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-        
-        /* Social providers */
-        .claims-provider-list-buttons,
-        .idp-providers {
-            margin-top: 20px;
-        }
-        
-        .accountButton {
-            background: #4267B2;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            margin: 5px 0;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .accountButton:hover {
-            opacity: 0.8;
-            text-decoration: none;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .forgot-password,
-        .textLink a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            margin-top: 10px;
-            display: inline-block;
-        }
-        
-        .forgot-password:hover,
-        .textLink a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Working/Loading state */
-        .working {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .working:after {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Responsive design */
         @media (max-width: 768px) {
             .container {
-                margin: 20px;
+                margin: 10px;
                 padding: 30px 20px;
             }
-        }
-        
-        /* Custom branding overrides */
-        .custom-intro {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 20px;
-            font-weight: 400;
-        }
-        
-        /* Hide default intro if needed */
-        .intro h2 {
-            display: none;
-        }
-        
-        /* Verification and success messages */
-        .verificationInfoText {
-            display: none;
-        }
-        
-        .verificationSuccessText {
-            color: #28a745;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-        
-        .verificationErrorText {
-            color: #dc3545;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-        
-        /* Remember me checkbox */
-        .remember-me {
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-            text-align: left;
-        }
-        
-        .remember-me input[type="checkbox"] {
-            margin-right: 8px;
-            width: auto;
-        }
-        
-        .remember-me label {
-            font-size: 14px;
-            color: #666;
-            cursor: pointer;
-            margin-bottom: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Custom Logo with fallback -->
-        <div class="logo">
-            <img id="logo-img" 
+        <div class="logo"><img id="logo-img" 
                  src="https://flow-customization-2686--sit.sandbox.my.site.com/abop/resource/BrandLogoWithText" 
-                 alt="Company Logo" 
-                 onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block';" />
-            <div class="logo-fallback">Your Company</div>
+                 alt="Company Logo"/>
         </div>
         
-        <!-- Custom Introduction Text -->
-        <div class="custom-intro">
-            Sign in with your email or ABOID
-        </div>
+        <h2>Sign in with your email or ABOID</h2>
         
-        <!-- Azure AD B2C will inject content here -->
-        <div id="api" role="main"></div>
+        <div id="api"></div>
         
-        <!-- Footer -->
         <div class="footer">
             © 2025 Your Company. All rights reserved.
         </div>
