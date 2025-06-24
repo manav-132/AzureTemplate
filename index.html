@@ -3,9 +3,11 @@
 <head>
     <title>Sign In - Your Company</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CORS and Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://*.b2clogin.com https://*.microsoftonline.com;">
-    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     
     <style>
@@ -34,11 +36,26 @@
             margin-bottom: 30px;
         }
         
+        .logo img {
+            max-height: 60px;
+            /* Add fallback in case image fails to load */
+            background: transparent;
+            border: none;
+        }
+        
         .logo-fallback {
+            display: none;
             font-size: 24px;
             font-weight: bold;
             color: #667eea;
             margin-bottom: 20px;
+        }
+        
+        .intro h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 300;
         }
         
         /* B2C API container styling */
@@ -106,6 +123,30 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         
+        .divider {
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .divider:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #666;
+            position: relative;
+        }
+        
+        /* Error handling */
         .error,
         .error.pageLevel {
             background-color: #f8d7da;
@@ -125,6 +166,12 @@
             background: none;
             border: none;
             padding: 0;
+        }
+        
+        /* Social providers */
+        .claims-provider-list-buttons,
+        .idp-providers {
+            margin-top: 20px;
         }
         
         .accountButton {
@@ -147,13 +194,6 @@
             text-decoration: none;
         }
         
-        .custom-intro {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 20px;
-            font-weight: 400;
-        }
-        
         .footer {
             margin-top: 30px;
             font-size: 12px;
@@ -174,6 +214,7 @@
             text-decoration: underline;
         }
         
+        /* Working/Loading state */
         .working {
             text-align: center;
             padding: 20px;
@@ -194,6 +235,28 @@
             to { transform: rotate(360deg); }
         }
         
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+        }
+        
+        /* Custom branding overrides */
+        .custom-intro {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        /* Hide default intro if needed */
+        .intro h2 {
+            display: none;
+        }
+        
+        /* Verification and success messages */
         .verificationInfoText {
             display: none;
         }
@@ -210,6 +273,7 @@
             margin-bottom: 15px;
         }
         
+        /* Remember me checkbox */
         .remember-me {
             display: flex;
             align-items: center;
@@ -228,19 +292,16 @@
             cursor: pointer;
             margin-bottom: 0;
         }
-        
-        @media (max-width: 768px) {
-            .container {
-                margin: 20px;
-                padding: 30px 20px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Logo -->
+        <!-- Custom Logo with fallback -->
         <div class="logo">
+            <img id="logo-img" 
+                 src="https://flow-customization-2686--sit.sandbox.my.site.com/abop/resource/BrandLogoWithText" 
+                 alt="Company Logo" 
+                 onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block';" />
             <div class="logo-fallback">Your Company</div>
         </div>
         
@@ -259,10 +320,12 @@
     </div>
     
     <script>
+        // Ensure CORS compatibility
         (function() {
             'use strict';
             
             window.addEventListener('DOMContentLoaded', function() {
+                // Additional customizations after B2C content loads
                 setTimeout(function() {
                     try {
                         // Hide default intro text if it appears
@@ -271,7 +334,7 @@
                             defaultIntro.style.display = 'none';
                         }
                         
-                        // Customize input placeholders
+                        // Add custom classes to B2C elements
                         var emailInput = document.getElementById('email') || 
                                        document.getElementById('signInName') ||
                                        document.querySelector('input[type="email"]');
@@ -279,11 +342,18 @@
                             emailInput.placeholder = 'Email or ABOID';
                         }
                         
+                        // Style password input
                         var passwordInput = document.getElementById('password') ||
                                           document.querySelector('input[type="password"]');
                         if (passwordInput) {
                             passwordInput.placeholder = 'Password';
                         }
+                        
+                        // Custom validation messages
+                        var errorElements = document.querySelectorAll('.error');
+                        errorElements.forEach(function(element) {
+                            element.style.animation = 'fadeIn 0.3s ease';
+                        });
                         
                         // Handle form submission
                         var forms = document.querySelectorAll('form');
@@ -297,27 +367,24 @@
                             });
                         });
                         
-                        // Custom validation messages animation
-                        var errorElements = document.querySelectorAll('.error');
-                        errorElements.forEach(function(element) {
-                            element.style.animation = 'fadeIn 0.3s ease';
-                        });
-                        
                     } catch (e) {
+                        // Silently handle any errors to prevent CORS issues
                         console.log('Customization error:', e);
                     }
                 }, 100);
             });
             
             // Add fade-in animation
-            var style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            `;
-            document.head.appendChild(style);
+            if (document.head) {
+                var style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(-10px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
         })();
     </script>
 </body>
