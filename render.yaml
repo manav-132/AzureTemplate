@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: b2c-html-template
+    env: static
+    buildCommand: echo "No build needed for static site"
+    staticPublishPath: ./
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: https://nonprodabob2c.b2clogin.com
+      - path: /*
+        name: Access-Control-Allow-Methods
+        value: GET, HEAD, OPTIONS
+      - path: /*
+        name: Access-Control-Allow-Headers
+        value: "*"
+      - path: /*
+        name: Access-Control-Max-Age
+        value: "86400"
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
